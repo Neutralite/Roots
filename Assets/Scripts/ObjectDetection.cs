@@ -3,9 +3,7 @@ using UnityEngine;
 public class ObjectDetection : MonoBehaviour
 {
     // Bit shift the index of the layer to get a bit mask
-    int rootNodeLayerMask = 1 << 6,
-        ghostNodeLayerMask = 1<<7;
-
+    int rootLayer = 1 << 6;
 
     private Camera mainCam;
 
@@ -25,36 +23,23 @@ public class ObjectDetection : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
+            if (Board.instance.availableNodes == 0)
+            {
+                Board.instance.ReloadScene();
+            }
+
             Ray ray = mainCam.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
 
-            if (Physics.Raycast(ray,out hit,15,rootNodeLayerMask))
+            if (Physics.Raycast(ray,out hit,15,rootLayer))
             {
-                Debug.Log($"{hit.collider.name} Detected",
-                    hit.collider.gameObject);
+                Debug.Log($"{hit.collider.transform.parent.name} Detected");
 
-                hit.collider.GetComponent<RootNode>().SelectRoot();
+                hit.collider.GetComponentInParent<GroundNode>().SelectNode();
             }
-
-            if (Physics.Raycast(ray, out hit, 15, ghostNodeLayerMask))
+            else
             {
-                Debug.Log($"{hit.collider.name} Detected",
-                    hit.collider.gameObject);
-
-                hit.collider.GetComponent<GhostNode>().GrowRoot();
-            }
-        }
-        else if (Input.GetMouseButtonDown(1))
-        {
-            Ray ray = mainCam.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
-
-            if (Physics.Raycast(ray, out hit, 15, rootNodeLayerMask))
-            {
-                Debug.Log($"{hit.collider.name} Detected",
-                    hit.collider.gameObject);
-
-                hit.collider.GetComponent<RootNode>().DeleteRoot();
+                Board.instance.selectedNode.UnSelectRoot();
             }
         }
     }

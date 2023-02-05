@@ -6,7 +6,9 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
 
-    public PoolManager poolManager;
+    public Board board;
+
+    //public PoolManager poolManager;
 
     // Start is called before the first frame update
     void Start()
